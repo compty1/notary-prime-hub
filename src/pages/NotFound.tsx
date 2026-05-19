@@ -83,6 +83,32 @@ const NotFound = () => {
             </Link>
           </div>
 
+          {/* GB-0757: Inline site search */}
+          <form
+            role="search"
+            aria-label="Search the site"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = query.trim();
+              if (q) navigate(`/services?q=${encodeURIComponent(q)}`);
+            }}
+            className="mb-6 flex items-center gap-2"
+          >
+            <Input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search services, FAQs, or pages…"
+              aria-label="Search services"
+              className="flex-1"
+            />
+            <Button type="submit" size="sm" disabled={!query.trim()}>
+              <Search className="mr-2 h-4 w-4" aria-hidden="true" /> Search
+            </Button>
+          </form>
+
+
+
           {/* Report broken link CTA */}
           <div className="mb-8">
             <Button
