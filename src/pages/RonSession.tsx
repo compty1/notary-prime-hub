@@ -1955,10 +1955,25 @@ export default function RonSession() {
                             platform: signingPlatform,
                           } as Record<string, Json | undefined>,
                         });
+                        // GB-0287 / GB-0490: When the 2-attempt cap is reached without
+                        // a passed KBA, ORC §147.65 requires recording the refusal.
+                        if (newAttempts >= 2 && !kbaCompleted) {
+                          try {
+                            await (supabase as any).from("refusal_logs").insert({
+                              appointment_id: appointmentId,
+                              signer_name: clientProfile?.full_name || "Unknown",
+                              refusal_category: "kba_failed",
+                              refusal_reason: "Identity verification failed after maximum 2 KBA attempts (ORC §147.66). Notarial act refused per ORC §147.65.",
+                              notes: `Platform: ${signingPlatform}; attempts: ${newAttempts}`,
+                            });
+                          } catch (err) {
+                            console.error("Failed to log KBA refusal:", err);
+                          }
+                        }
                       }
                       toast({
                         title: `KBA Attempt ${newAttempts} of 2`,
-                        description: newAttempts >= 2 ? "This is the final attempt allowed under Ohio law." : "One attempt remaining.",
+                        description: newAttempts >= 2 ? "Maximum attempts reached. Refusal logged under ORC §147.65 — session must be terminated." : "One attempt remaining.",
                         variant: newAttempts >= 2 ? "destructive" : "default",
                       });
                     }}
