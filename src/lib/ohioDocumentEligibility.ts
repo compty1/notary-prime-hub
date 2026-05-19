@@ -26,7 +26,10 @@ const WITNESS_REQUIREMENTS: Record<string, { count: number; notes: string }> = {
 
 /** Documents that cannot use RON and must be in-person */
 const IN_PERSON_ONLY: RegExp[] = [
-  /^(?:.*\s)?will(?:\s.*)?$/i, // Some jurisdictions restrict RON for wills
+  /^(?:.*\s)?will(?:\s.*)?$/i, // Wills — Ohio restricts RON
+  /codicil/i,                  // GB-0489: amendments to wills
+  /holographic/i,              // Handwritten wills
+  /last\s*testament/i,
 ];
 
 export interface EligibilityResult {
