@@ -108,6 +108,79 @@ const STAGE_PROBABILITY: Record<string, number> = {
   negotiation: 75, "closed-won": 100, "closed-lost": 0,
 };
 
+/* ---------- Draggable lead card ---------- */
+function DraggableLeadCard({ lead }: { lead: Lead }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `lead:${lead.id}` });
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      className="touch-none"
+      role="button"
+      tabIndex={0}
+      aria-label={`Lead ${lead.name || lead.email || "unnamed"}`}
+    >
+      <div className="cursor-grab active:cursor-grabbing rounded-md border-2 bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
+        <p className="font-medium truncate">{lead.name || lead.email || "Unnamed"}</p>
+        {lead.service_needed && <p className="text-muted-foreground truncate">{lead.service_needed}</p>}
+        {lead.intent_score && (
+          <Badge variant="secondary" className="mt-1 text-[10px]">{lead.intent_score}</Badge>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DraggableDealCard({ deal }: { deal: Deal }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: `deal:${deal.id}` });
+  const daysInStage = differenceInDays(new Date(), new Date(deal.updated_at || deal.created_at));
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.4 : 1 }}
+      className="touch-none"
+      role="button"
+      tabIndex={0}
+      aria-label={`Deal ${deal.title}`}
+    >
+      <div className="cursor-grab active:cursor-grabbing rounded-md border-2 bg-card p-2 text-xs shadow-sm hover:shadow transition-shadow">
+        <p className="font-medium truncate">{deal.title || "Untitled"}</p>
+        <p className="text-muted-foreground">${(deal.value || 0).toLocaleString()}</p>
+        {deal.expected_close && <p className="text-muted-foreground">Close: {format(new Date(deal.expected_close), "MMM d")}</p>}
+        <div className="mt-1 flex items-center gap-1">
+          <Clock className="h-3 w-3 text-muted-foreground" />
+          <span className={`text-[10px] ${daysInStage > 30 ? "text-destructive" : "text-muted-foreground"}`}>{daysInStage}d in stage</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KanbanDroppable({
+  id, isEmpty, children, label,
+}: { id: string; isEmpty: boolean; children: React.ReactNode; label: string }) {
+  const { setNodeRef, isOver } = useDroppable({ id });
+  return (
+    <div
+      ref={setNodeRef}
+      aria-label={label}
+      className={`space-y-2 min-h-[120px] rounded-md p-1 border-2 transition-colors ${
+        isOver ? "bg-primary/5 border-primary/40 border-dashed" : "border-transparent"
+      }`}
+    >
+      {isEmpty ? (
+        <div className="text-center text-[10px] text-muted-foreground/70 py-6 border-2 border-dashed border-border/50 rounded-md">
+          Drop here
+        </div>
+      ) : children}
+    </div>
+  );
+}
+
 export default function AdminCRM() {
   usePageMeta({ title: "CRM", noIndex: true });
   const { user } = useAuth();
