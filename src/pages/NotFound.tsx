@@ -1,8 +1,9 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Home, FileQuestion, Search, Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,7 +19,9 @@ const popularPages = [
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [reported, setReported] = useState(false);
+  const [query, setQuery] = useState("");
 
   usePageMeta({ title: "Page Not Found", description: "The page you're looking for doesn't exist. Browse our services or return home.", noIndex: true });
 
@@ -79,6 +82,32 @@ const NotFound = () => {
               </Button>
             </Link>
           </div>
+
+          {/* GB-0757: Inline site search */}
+          <form
+            role="search"
+            aria-label="Search the site"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = query.trim();
+              if (q) navigate(`/services?q=${encodeURIComponent(q)}`);
+            }}
+            className="mb-6 flex items-center gap-2"
+          >
+            <Input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search services, FAQs, or pages…"
+              aria-label="Search services"
+              className="flex-1"
+            />
+            <Button type="submit" size="sm" disabled={!query.trim()}>
+              <Search className="mr-2 h-4 w-4" aria-hidden="true" /> Search
+            </Button>
+          </form>
+
+
 
           {/* Report broken link CTA */}
           <div className="mb-8">
