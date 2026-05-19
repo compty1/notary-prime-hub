@@ -274,10 +274,12 @@ export function calculatePrice(input: PricingInput, settings: PricingSettings): 
     addOnFees += settings.poa_surcharge;
     addOnItems.push({ label: "POA Surcharge", amount: settings.poa_surcharge });
   }
-  if (input.waitTimePeriods && input.waitTimePeriods > 0) {
+  if (input.waitTimePeriods && input.waitTimePeriods > 0 && !input.waitTimeWaived) {
     const wt = input.waitTimePeriods * settings.wait_time_fee;
     addOnFees += wt;
     addOnItems.push({ label: `Wait Time (${input.waitTimePeriods}×15 min)`, amount: wt });
+  } else if (input.waitTimePeriods && input.waitTimePeriods > 0 && input.waitTimeWaived) {
+    addOnItems.push({ label: `Wait Time (${input.waitTimePeriods}×15 min — waived)`, amount: 0 });
   }
   if (input.printingSets && input.printingSets > 0) {
     const pf = input.printingSets * settings.printing_fee;
