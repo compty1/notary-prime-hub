@@ -32,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const abortRef = React.useRef<AbortController | null>(null);
   const idleManagerRef = useRef<IdleTimeoutManager | null>(null);
+  const refreshFailuresRef = useRef<number>(0);
 
   // GAP-0367: Session fingerprinting for anti-hijacking
   useEffect(() => {
