@@ -19,7 +19,9 @@ const popularPages = [
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [reported, setReported] = useState(false);
+  const [query, setQuery] = useState("");
 
   usePageMeta({ title: "Page Not Found", description: "The page you're looking for doesn't exist. Browse our services or return home.", noIndex: true });
 
