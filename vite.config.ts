@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => ({
     dedupe: ["react", "react-dom"],
   },
   build: {
+    sourcemap: mode === "development",
     rollupOptions: {
       output: {
         manualChunks(id: string) {
@@ -45,6 +46,12 @@ export default defineConfig(({ mode }) => ({
           }
           if (id.includes("src/pages/design/") || id.includes("src/components/design/")) {
             return "design-studio";
+          }
+          if (id.includes("node_modules/@radix-ui")) {
+            return "radix-ui";
+          }
+          if (id.includes("node_modules/pdf-lib") || id.includes("node_modules/html2pdf")) {
+            return "pdf-tools";
           }
         },
       },
