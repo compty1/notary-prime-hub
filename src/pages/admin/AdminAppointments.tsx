@@ -793,7 +793,7 @@ export default function AdminAppointments() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          )} />
           {/* Pagination */}
           <div className="flex items-center justify-between pt-2">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
@@ -804,8 +804,9 @@ export default function AdminAppointments() {
               Next <ChevronRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
-        </div>
+        </>
       )}
+
 
       {/* Create Appointment Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
