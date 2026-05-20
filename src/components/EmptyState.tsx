@@ -28,6 +28,8 @@ interface EmptyStateProps {
   /** Legacy: actionLabel + onAction. */
   actionLabel?: string;
   onAction?: () => void;
+  /** Legacy: link target — renders action as a router link. */
+  actionTo?: string;
   children?: ReactNode;
   className?: string;
 }
