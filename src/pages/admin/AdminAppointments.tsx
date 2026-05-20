@@ -43,6 +43,7 @@ const statusFlow: Record<string, string> = {
 import { appointmentStatusColors as statusColors, serviceRequestStatusColors } from "@/lib/statusColors";
 
 import { formatDate, formatTime } from "@/lib/utils";
+import { VirtualCards } from "@/components/admin/VirtualCards";
 
 function DraggableApptCard({ appt, clientName }: { appt: any; clientName: string }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: appt.id });
