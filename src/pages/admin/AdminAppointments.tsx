@@ -717,8 +717,7 @@ export default function AdminAppointments() {
           <CardContent className="py-8 text-center text-muted-foreground">No appointments found</CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {appointments.map((appt) => (
+        <VirtualCards items={appointments} estimateSize={160} renderItem={(appt) => (
             <Card key={appt.id} className="border-border/50">
               <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4 cursor-pointer" onClick={() => openDetail(appt)}>
