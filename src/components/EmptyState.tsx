@@ -48,11 +48,11 @@ export function EmptyState({
   action,
   actionLabel,
   onAction,
+  actionTo,
   children,
   className = "",
 }: EmptyStateProps) {
   const Icon = resolveIcon(icon);
-  const effectiveAction = action || (actionLabel && onAction ? { label: actionLabel, onClick: onAction } : null);
 
   return (
     <div
@@ -62,12 +62,17 @@ export function EmptyState({
       {Icon && <Icon aria-hidden="true" className="mb-4 h-12 w-12 text-muted-foreground/50" />}
       <h3 className="text-base font-bold text-foreground">{title}</h3>
       {description && <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>}
-      {effectiveAction && (
-        <Button onClick={effectiveAction.onClick} size="sm" className="mt-4">
-          {effectiveAction.label}
-        </Button>
+      {action && (
+        <Button onClick={action.onClick} size="sm" className="mt-4">{action.label}</Button>
+      )}
+      {!action && actionTo && actionLabel && (
+        <Button asChild size="sm" className="mt-4"><Link to={actionTo}>{actionLabel}</Link></Button>
+      )}
+      {!action && !actionTo && actionLabel && onAction && (
+        <Button onClick={onAction} size="sm" className="mt-4">{actionLabel}</Button>
       )}
       {children && <div className="mt-4">{children}</div>}
     </div>
   );
 }
+
