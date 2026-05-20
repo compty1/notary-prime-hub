@@ -1,24 +1,56 @@
 /**
  * EmptyState — reusable accessible empty-state block.
  *
- * Standardizes the "no data" pattern across admin dashboards and portal
- * tabs: icon, headline, helper text, and an optional CTA. WCAG-friendly:
- * decorative icon is `aria-hidden`, headline is a real heading.
+ * Accepts either a LucideIcon component OR a string key from the
+ * domain icon map (appointments/documents/chat/search/inbox/generic)
+ * for backward compatibility with existing call sites.
  */
 import { ReactNode } from "react";
-import { LucideIcon } from "lucide-react";
+import { Calendar, FileText, MessageSquare, Search, Inbox, FolderOpen, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const ICON_MAP: Record<string, LucideIcon> = {
+  appointments: Calendar,
+  documents: FileText,
+  chat: MessageSquare,
+  search: Search,
+  inbox: Inbox,
+  generic: FolderOpen,
+};
+
+type IconProp = LucideIcon | keyof typeof ICON_MAP | string;
+
 interface EmptyStateProps {
-  icon?: LucideIcon;
+  icon?: IconProp;
   title: string;
   description?: ReactNode;
   action?: { label: string; onClick: () => void };
+  /** Legacy: actionLabel + onAction. */
+  actionLabel?: string;
+  onAction?: () => void;
   children?: ReactNode;
   className?: string;
 }
 
-export function EmptyState({ icon: Icon, title, description, action, children, className = "" }: EmptyStateProps) {
+function resolveIcon(icon?: IconProp): LucideIcon | null {
+  if (!icon) return null;
+  if (typeof icon === "string") return ICON_MAP[icon] || FolderOpen;
+  return icon;
+}
+
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  actionLabel,
+  onAction,
+  children,
+  className = "",
+}: EmptyStateProps) {
+  const Icon = resolveIcon(icon);
+  const effectiveAction = action || (actionLabel && onAction ? { label: actionLabel, onClick: onAction } : null);
+
   return (
     <div
       role="status"
@@ -27,9 +59,9 @@ export function EmptyState({ icon: Icon, title, description, action, children, c
       {Icon && <Icon aria-hidden="true" className="mb-4 h-12 w-12 text-muted-foreground/50" />}
       <h3 className="text-base font-bold text-foreground">{title}</h3>
       {description && <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>}
-      {action && (
-        <Button onClick={action.onClick} size="sm" className="mt-4">
-          {action.label}
+      {effectiveAction && (
+        <Button onClick={effectiveAction.onClick} size="sm" className="mt-4">
+          {effectiveAction.label}
         </Button>
       )}
       {children && <div className="mt-4">{children}</div>}
