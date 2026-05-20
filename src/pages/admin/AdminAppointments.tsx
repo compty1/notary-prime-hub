@@ -43,6 +43,7 @@ const statusFlow: Record<string, string> = {
 import { appointmentStatusColors as statusColors, serviceRequestStatusColors } from "@/lib/statusColors";
 
 import { formatDate, formatTime } from "@/lib/utils";
+import { VirtualCards } from "@/components/admin/VirtualCards";
 
 function DraggableApptCard({ appt, clientName }: { appt: any; clientName: string }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: appt.id });
@@ -717,8 +718,8 @@ export default function AdminAppointments() {
           <CardContent className="py-8 text-center text-muted-foreground">No appointments found</CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {appointments.map((appt) => (
+        <>
+        <VirtualCards items={appointments} estimateSize={160} renderItem={(appt) => (
             <Card key={appt.id} className="border-border/50">
               <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4 cursor-pointer" onClick={() => openDetail(appt)}>
@@ -794,7 +795,7 @@ export default function AdminAppointments() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          )} />
           {/* Pagination */}
           <div className="flex items-center justify-between pt-2">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>
@@ -805,8 +806,9 @@ export default function AdminAppointments() {
               Next <ChevronRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
-        </div>
+        </>
       )}
+
 
       {/* Create Appointment Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
