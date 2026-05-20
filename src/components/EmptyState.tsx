@@ -8,6 +8,7 @@
 import { ReactNode } from "react";
 import { Calendar, FileText, MessageSquare, Search, Inbox, FolderOpen, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   appointments: Calendar,
